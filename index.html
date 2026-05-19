@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Капсула — молодёжная одежда</title>
+  <meta name="description" content="Капсула — женская и мужская молодёжная одежда. Предзаказ без оплаты на сайте." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="site-header-root"></div>
+
+  <main>
+    <section class="gender-hero" aria-label="Женское и мужское">
+      <a class="gender-hero__card gender-hero__card--women" href="catalog.html?gender=women">
+        <span class="gender-hero__label">Женское</span>
+        <span class="gender-hero__hint">Платья · брюки · трикотаж</span>
+      </a>
+      <a class="gender-hero__card gender-hero__card--men" href="catalog.html?gender=men">
+        <span class="gender-hero__label">Мужское</span>
+        <span class="gender-hero__hint">Рубашки · деним · верх</span>
+      </a>
+    </section>
+
+    <section class="section section--soft">
+      <div class="section__head">
+        <h2 class="section__title">Женское — новинки</h2>
+        <p class="section__sub"><a href="catalog.html?gender=women">Весь женский каталог →</a></p>
+      </div>
+      <div class="grid-products" id="home-featured-women"></div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2 class="section__title">Мужское — новинки</h2>
+        <p class="section__sub"><a href="catalog.html?gender=men">Весь мужской каталог →</a></p>
+      </div>
+      <div class="grid-products" id="home-featured-men"></div>
+    </section>
+
+    <section class="section section--soft">
+      <div class="section__head site-wrap">
+        <h2 class="section__title">Предзаказ</h2>
+        <p class="section__sub">Без оплаты на сайте — только заявка и звонок менеджера. <a href="preorder.html">Как это работает</a></p>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer-root"></div>
+
+  <script src="js/volna-api.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart-core.js"></script>
+  <script src="js/site-chrome.js"></script>
+  <script src="js/auth-pages.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/motion.js"></script>
+</body>
+</html>

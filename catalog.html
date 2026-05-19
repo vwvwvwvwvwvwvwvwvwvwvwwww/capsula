@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Каталог — Капсула</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="site-header-root"></div>
+
+  <main class="section">
+    <div class="section__head">
+      <h1 class="section__title">Каталог</h1>
+      <p class="section__sub" id="catalog-gender-label">Раздел</p>
+      <p class="section__sub">Цены ориентировочные — итог после подтверждения предзаказа.</p>
+    </div>
+
+    <div class="catalog-toolbar">
+      <div class="catalog-chips" id="catalog-chips"></div>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+        <label class="visually-hidden" for="catalog-search">Поиск</label>
+        <input type="search" class="search-field" id="catalog-search" placeholder="Название или категория…" />
+        <label class="visually-hidden" for="catalog-sort">Сортировка</label>
+        <select class="select" id="catalog-sort">
+          <option value="default">По умолчанию</option>
+          <option value="price-asc">Цена ↑</option>
+          <option value="price-desc">Цена ↓</option>
+          <option value="name">По названию</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid-products" id="catalog-grid"></div>
+    <p class="catalog-empty" id="catalog-empty" hidden>По запросу ничего не найдено.</p>
+  </main>
+
+  <div id="site-footer-root"></div>
+
+  <script src="js/volna-api.js"></script>
+  <script src="js/catalog-sections.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart-core.js"></script>
+  <script src="js/site-chrome.js"></script>
+  <script src="js/auth-pages.js"></script>
+  <script src="js/catalog-page.js"></script>
+  <script src="js/motion.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Корзина — Капсула</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="site-header-root"></div>
+
+  <main class="cart-page">
+    <h1 class="section__title" style="padding: 0 20px; max-width: var(--max); margin: 0 auto 24px">Корзина</h1>
+    <p class="form__ok preorder-success" id="preorder-success" hidden></p>
+    <div class="cart-layout site-wrap">
+      <div>
+        <div class="cart-lines" id="cart-lines"></div>
+        <p class="catalog-empty" id="cart-empty">Корзина пуста. <a href="catalog.html">Перейти в каталог</a></p>
+      </div>
+      <aside class="cart-aside" id="cart-aside" hidden>
+        <p class="cart-aside__total">Итого: <strong id="cart-sum">0 ₽</strong></p>
+        <h2 class="section__title" style="font-size: 1rem; margin-bottom: 12px">Предзаказ</h2>
+        <form id="preorder-form" class="form">
+          <div class="form__row">
+            <label for="pf-name">Имя *</label>
+            <input id="pf-name" name="name" required autocomplete="name" />
+          </div>
+          <div class="form__row">
+            <label for="pf-phone">Телефон *</label>
+            <input id="pf-phone" name="phone" required inputmode="tel" autocomplete="tel" />
+          </div>
+          <div class="form__row">
+            <label for="pf-email">E-mail</label>
+            <input id="pf-email" name="email" type="email" autocomplete="email" />
+          </div>
+          <div class="form__row">
+            <label for="pf-city">Город</label>
+            <input id="pf-city" name="city" autocomplete="address-level2" />
+          </div>
+          <div class="form__row">
+            <label for="pf-comment">Комментарий</label>
+            <textarea id="pf-comment" name="comment" rows="3"></textarea>
+          </div>
+          <div class="form__row form__row--check">
+            <input type="checkbox" id="pf-consent" name="consent" required />
+            <label for="pf-consent">Согласие на обработку персональных данных *</label>
+          </div>
+          <button type="submit" class="btn btn--primary btn--block">Отправить предзаказ</button>
+        </form>
+      </aside>
+    </div>
+  </main>
+
+  <div id="site-footer-root"></div>
+
+  <script src="js/volna-api.js"></script>
+  <script src="js/catalog-sections.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart-core.js"></script>
+  <script src="js/site-chrome.js"></script>
+  <script src="js/auth-pages.js"></script>
+  <script src="js/cart-page.js"></script>
+  <script src="js/motion.js"></script>
+</body>
+</html>

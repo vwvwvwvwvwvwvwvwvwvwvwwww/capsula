@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Аккаунт — Капсула</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page-account">
+  <div id="site-header-root"></div>
+
+  <main class="account-shell site-wrap">
+    <header class="account-hero" id="account-hero">
+      <h1 class="account-hero__title">Аккаунт</h1>
+      <p class="account-hero__lead" id="account-hero-lead">Вход в магазин или новая регистрация</p>
+    </header>
+
+    <section class="account-dashboard" id="account-dashboard" hidden>
+      <div class="account-panel-card account-panel-card--dashboard">
+        <p class="account-dashboard__hello" id="account-greeting"></p>
+        <h2 class="account-dashboard__title">Мои заказы</h2>
+        <p class="account-dashboard__sub" id="orders-loading" hidden>Загрузка…</p>
+        <p class="account-dashboard__empty" id="orders-empty" hidden>Заказов пока нет. Оформите предзаказ из <a href="cart.html">корзины</a>.</p>
+        <p class="form__err" id="orders-err" hidden></p>
+        <div class="order-list" id="order-list"></div>
+        <article class="order-detail" id="order-detail" hidden>
+          <button type="button" class="btn-link order-detail__back" id="order-detail-back">← К списку заказов</button>
+          <div id="order-detail-body"></div>
+        </article>
+        <div class="account-dashboard__actions">
+          <button type="button" class="btn btn--ghost btn--sm" id="account-logout">Выйти</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="account-panel-card" id="account-auth-card">
+      <div class="account-tabs" role="tablist" aria-label="Режим">
+        <button type="button" class="account-tabs__btn is-active" role="tab" id="tab-login" aria-selected="true" aria-controls="panel-login">Вход</button>
+        <button type="button" class="account-tabs__btn" role="tab" id="tab-register" aria-selected="false" aria-controls="panel-register">Регистрация</button>
+      </div>
+
+      <div class="account-tab-panels">
+        <section id="panel-login" class="account-tab-panel is-visible" role="tabpanel" aria-labelledby="tab-login">
+          <form id="form-login" class="form account-form" novalidate autocomplete="on">
+            <div class="form__row">
+              <label for="login-email">E-mail</label>
+              <input id="login-email" type="email" name="email" autocomplete="username" inputmode="email" />
+            </div>
+            <div class="form__row">
+              <label for="login-password">Пароль</label>
+              <input id="login-password" type="password" name="password" autocomplete="current-password" />
+            </div>
+            <p class="form__err account-form__err" id="login-err" role="alert" hidden></p>
+            <button type="submit" class="btn btn--primary btn--block account-form__submit">Войти</button>
+          </form>
+        </section>
+
+        <section id="panel-register" class="account-tab-panel" role="tabpanel" aria-labelledby="tab-register" hidden>
+          <form id="form-register" class="form account-form" novalidate autocomplete="on">
+            <div class="form__row">
+              <label for="reg-name">Имя</label>
+              <input id="reg-name" name="name" autocomplete="name" />
+            </div>
+            <div class="form__row">
+              <label for="reg-email">E-mail</label>
+              <input id="reg-email" type="email" name="email" autocomplete="email" inputmode="email" />
+            </div>
+            <div class="form__row">
+              <label for="reg-password">Пароль</label>
+              <input id="reg-password" type="password" name="password" autocomplete="new-password" minlength="6" />
+            </div>
+            <p class="form__err account-form__err" id="register-err" role="alert" hidden></p>
+            <button type="submit" class="btn btn--primary btn--block account-form__submit">Создать аккаунт</button>
+          </form>
+        </section>
+      </div>
+
+      <div class="account-tools">
+        <button type="button" class="btn btn--ghost btn--sm" id="account-ping">Проверить сервер</button>
+        <span class="account-tools__hint" id="account-ping-result" aria-live="polite"></span>
+      </div>
+
+      <p class="account-demo">
+        Админ: <strong>admin@kapsula.local</strong> · <strong>admin123</strong>
+      </p>
+      <p class="account-demo account-demo--clients">
+        Клиенты (пароль у всех <strong>client123</strong>):<br />
+        <strong>anna@kapsula.local</strong> · <strong>ivan@kapsula.local</strong> ·
+        <strong>maria@kapsula.local</strong> · <strong>dmitry@kapsula.local</strong> ·
+        <strong>elena@kapsula.local</strong> · <strong>oleg@kapsula.local</strong>
+      </p>
+    </div>
+  </main>
+
+  <div id="site-footer-root"></div>
+
+  <script src="js/volna-api.js"></script>
+  <script src="js/catalog-sections.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart-core.js"></script>
+  <script src="js/site-chrome.js"></script>
+  <script src="js/order-status.js"></script>
+  <script src="js/auth-pages.js"></script>
+  <script src="js/account-page.js"></script>
+  <script src="js/motion.js"></script>
+</body>
+</html>

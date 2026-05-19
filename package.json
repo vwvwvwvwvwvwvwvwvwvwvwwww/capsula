@@ -1,0 +1,19 @@
+{
+  "name": "kapsula-shop",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "create-admin": "node scripts/create-admin.mjs",
+    "import-lime": "node scripts/import-lime-catalog.mjs",
+    "seed-clients": "node scripts/seed-clients.mjs",
+    "enrich-sizes": "node scripts/enrich-product-sizes.mjs"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "nodemailer": "^6.10.1"
+  }
+}

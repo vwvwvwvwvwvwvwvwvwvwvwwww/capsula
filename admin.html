@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Админ — Капсула</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page-admin">
+  <div id="site-header-root"></div>
+
+  <main class="admin-page">
+    <h1 class="section__title site-wrap" style="padding: 0 20px">Админ-панель</h1>
+    <p class="section__sub site-wrap" style="padding: 0 20px; margin-bottom: 24px" id="admin-gate">Загрузка…</p>
+    <div class="admin-grid site-wrap" id="admin-content" hidden>
+      <div class="admin-card admin-card--span">
+        <h2 class="section__title" style="font-size: 1rem">Каталог товаров</h2>
+        <p class="section__sub" style="margin-top: 6px">Редактирование в браузере; на сервер пишется файл <code>data/products.json</code> (при первом запуске копируется из шаблона).</p>
+        <p class="form__err" id="admin-products-err" hidden></p>
+        <p class="admin-inline-ok" id="admin-products-ok" hidden></p>
+        <div class="admin-products-toolbar">
+          <button type="button" class="btn btn--primary btn--sm" id="admin-products-save">Сохранить каталог</button>
+          <button type="button" class="btn btn--ghost btn--sm" id="admin-products-add">Добавить товар</button>
+        </div>
+        <div class="admin-table-scroll">
+          <table class="admin-table" id="admin-products-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Цена</th>
+                <th>Пол</th>
+                <th>Категория</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="admin-card">
+        <h2 class="section__title" style="font-size: 1rem">Пользователи</h2>
+        <table class="admin-table" id="admin-users-table">
+          <thead><tr><th>ID</th><th>E-mail</th><th>Имя</th><th>Роль</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p class="form__err" id="admin-users-err" hidden></p>
+      </div>
+      <div class="admin-card">
+        <h2 class="section__title" style="font-size: 1rem">Предзаказы</h2>
+        <table class="admin-table" id="admin-preorders-table">
+          <thead><tr><th>ID</th><th>Клиент</th><th>Телефон</th><th>Статус</th><th>Сумма</th><th>Дата</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p class="form__err" id="admin-preorders-err" hidden></p>
+        <pre class="admin-json" id="admin-preorder-detail" hidden></pre>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer-root"></div>
+
+  <script src="js/volna-api.js"></script>
+  <script src="js/catalog-sections.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart-core.js"></script>
+  <script src="js/site-chrome.js"></script>
+  <script src="js/auth-pages.js"></script>
+  <script src="js/admin-page.js"></script>
+  <script src="js/motion.js"></script>
+</body>
+</html>
