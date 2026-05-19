@@ -327,6 +327,9 @@ function bindServer(p) {
     if (actual !== PORT_PREFERRED) {
       console.warn(`[КАПСУЛА] Используется порт ${actual} вместо ${PORT_PREFERRED}. Откройте в браузере новый URL из строк ниже.`);
     }
+    console.log(
+      `[КАПСУЛА] Слушаем порт ${actual}. На Railway в Networking → Generate Domain укажите тот же номер (или не задавайте PORT вручную — подставится автоматически).`
+    );
     console.log(`Капсула: http://127.0.0.1:${actual}/`);
     console.log(`Капсула: http://localhost:${actual}/`);
     console.log(`Проверка API: http://127.0.0.1:${actual}/api/ping  → JSON с "service":"kapsula"`);

@@ -13,6 +13,7 @@ RUN npm ci --omit=dev
 COPY . .
 
 ENV NODE_ENV=production
-EXPOSE 3333
+# Реальный порт задаёт Railway через $PORT; EXPOSE — подсказка для прокси (часто 8080).
+EXPOSE 8080
 
 CMD ["npm", "start"]
