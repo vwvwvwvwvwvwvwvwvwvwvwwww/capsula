@@ -8,7 +8,6 @@ import { fileURLToPath } from "node:url";
 import { createStore } from "./lib/store.mjs";
 import { readProducts, writeProducts, validateProducts, getProductsPath } from "./lib/products-persist.mjs";
 import { loadEnv } from "./lib/load-env.mjs";
-import { sendPreorderEmails, isMailConfigured } from "./lib/mail.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname);
@@ -254,18 +253,7 @@ async function handleApi(req, res) {
       if (body === null || typeof body !== "object") return sendJson(res, 400, { error: "Некорректный JSON" });
       const u = requireUser(req);
       const { id } = store.createPreorder(u ? u.id : null, body);
-      let mail = { ok: false, skipped: true };
-      try {
-        mail = await sendPreorderEmails(ROOT, {
-          orderId: id,
-          payload: body,
-          accountEmail: u?.email || null,
-        });
-      } catch (mailErr) {
-        console.error("[КАПСУЛА] Ошибка отправки e-mail:", mailErr);
-        mail = { ok: false, error: mailErr.message || "Ошибка почты" };
-      }
-      return sendJson(res, 201, { id, ok: true, mail });
+      return sendJson(res, 201, { id, ok: true });
     }
 
     return sendJson(res, 404, { error: "Метод не найден" });
@@ -347,13 +335,6 @@ function bindServer(p) {
     console.log(
       "Вход: откройте страницу по адресу выше (не смешивайте 127.0.0.1 и localhost — куки разные)."
     );
-    if (isMailConfigured()) {
-      console.log("Почта: SMTP настроен — уведомления о предзаказах включены.");
-    } else {
-      console.log(
-        "Почта: SMTP не настроен — скопируйте .env.example в .env или письма сохраняются в data/mail-outbox/"
-      );
-    }
   });
 }
 

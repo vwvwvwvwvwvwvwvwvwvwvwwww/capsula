@@ -11,7 +11,7 @@
 ```bash
 npm install
 cp .env.example .env
-# отредактируйте .env при необходимости (SMTP, пути к БД и каталогу)
+# отредактируйте .env при необходимости (пути к БД и каталогу)
 npm start
 ```
 
@@ -30,7 +30,7 @@ npm start
 ## Что не коммитить
 
 - **`.env`** — секреты и локальные настройки (в репозитории есть только **`.env.example`**).
-- **`data/*.db`**, **`data/products.json`**, **`data/mail-outbox/`** — локальные данные и копия каталога (при первом запуске `products.json` создаётся из `lib/catalog-default.json`).
+- **`data/*.db`**, **`data/products.json`** — локальные данные и копия каталога (при первом запуске `products.json` создаётся из `lib/catalog-default.json`).
 
 ## Структура (кратко)
 

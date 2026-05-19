@@ -87,13 +87,6 @@
       const r = await window.VolnaApi.submitPreorder(payload);
       if (r.ok) {
         serverMsg = `Сохранено в базе, номер заявки: ${r.id}.`;
-        if (r.email?.ok) {
-          serverMsg += " Письмо с подтверждением отправлено на e-mail.";
-        } else if (r.email?.skipped) {
-          serverMsg += " (Почта не настроена — скопируйте .env.example в .env.)";
-        } else if (r.email?.error) {
-          serverMsg += " (Не удалось отправить письмо — заявка сохранена.)";
-        }
       }
       else if (r.error !== "offline") {
         okEl.hidden = false;

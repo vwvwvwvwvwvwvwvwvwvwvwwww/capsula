@@ -1,0 +1,3 @@
+# Railway (Nixpacks): Node 20 LTS для prebuild better-sqlite3
+[variables]
+NIXPACKS_NODE_VERSION = "20"

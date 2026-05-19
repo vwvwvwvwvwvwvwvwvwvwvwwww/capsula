@@ -12,6 +12,8 @@
 
 Перед загрузкой не добавляйте файл `.env` в репозиторий. Он уже указан в `.gitignore`.
 
+Сборка идёт через **`Dockerfile`** (Node 20). В репозитории также есть `.nvmrc` и `nixpacks.toml` на случай Nixpacks. Не ставьте в Railway `NODE_VERSION=24` — для `better-sqlite3` сборка часто падает.
+
 ## 2. Загрузка на Railway
 
 1. Создайте проект на Railway.
@@ -47,18 +49,6 @@ DB_PATH=/data/app.db
 PRODUCTS_PATH=/data/products.json
 ```
 
-Если нужна отправка писем:
-
-```env
-SMTP_HOST=smtp.yandex.ru
-SMTP_PORT=465
-SMTP_SECURE=1
-SMTP_USER=ваш@yandex.ru
-SMTP_PASS=пароль_приложения
-MAIL_FROM=Капсула <ваш@yandex.ru>
-MAIL_TO=ваш@yandex.ru
-```
-
 `PORT` в Railway не задавайте вручную.
 
 ## 5. Проверка после деплоя
@@ -90,3 +80,13 @@ https://ваш-домен.up.railway.app/api/ping
 - `admin123`
 
 Для публичной ссылки лучше задать свой пароль в Railway Variables.
+
+## 7. Ошибка сборки `better-sqlite3` / `node-gyp`
+
+Если в логах `npm ci` падает на `better-sqlite3`:
+
+1. В Railway → **Settings** → **Node** (или Variables) убедитесь, что нет переменной `NODE_VERSION=24` — удалите её или поставьте `20`.
+2. Закоммитьте и запушьте актуальные `Dockerfile`, `.nvmrc`, `nixpacks.toml` из репозитория.
+3. **Redeploy** (Deploy → Redeploy).
+
+После успешной сборки проверьте `/api/ping` (см. раздел 5).
