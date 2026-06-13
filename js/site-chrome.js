@@ -157,14 +157,6 @@
     renderHeader();
     renderFooter();
     window.dispatchEvent(new CustomEvent("sitechrome:mounted"));
-
-    if (window.CatalogApi && typeof window.CatalogApi.hydrateFromServer === "function") {
-      window.CatalogApi.hydrateFromServer().then((updated) => {
-        if (!updated) return;
-        renderCategoryStrip();
-        window.dispatchEvent(new CustomEvent("volna:catalog"));
-      });
-    }
   }
 
   window.updateCartBadge = function () {

@@ -8,7 +8,7 @@ import zlib from "node:zlib";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import { createStore } from "./lib/store.mjs";
-import { readProducts, writeProducts, validateProducts, getProductsPath } from "./lib/products-persist.mjs";
+import { readProducts, writeProducts, validateProducts, getProductsPath, ensureProductsFile } from "./lib/products-persist.mjs";
 import { loadEnv } from "./lib/load-env.mjs";
 import { sendPreorderEmails, isMailConfigured, verifySmtpConnection } from "./lib/mail.mjs";
 
@@ -20,6 +20,7 @@ const PORT = Number(process.env.PORT, 10) || 3333;
 const DB_PATH = process.env.DB_PATH || path.join(ROOT, "data", "app.db");
 
 const store = createStore(DB_PATH);
+ensureProductsFile(ROOT);
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
