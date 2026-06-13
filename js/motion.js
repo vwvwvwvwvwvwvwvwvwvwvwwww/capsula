@@ -117,8 +117,7 @@
     bindHeroScroll();
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
+  document.addEventListener("DOMContentLoaded", init, { once: true });
 
   window.VolnaMotion = { scan };
 })();

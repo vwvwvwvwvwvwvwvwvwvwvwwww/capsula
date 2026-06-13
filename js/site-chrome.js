@@ -164,9 +164,6 @@
     if (el) el.textContent = String(cartCount());
   };
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", mount);
-  } else {
-    mount();
-  }
+  // С defer-скриптами mount только после DOMContentLoaded — иначе home.js ещё не подписан на событие.
+  document.addEventListener("DOMContentLoaded", mount, { once: true });
 })();

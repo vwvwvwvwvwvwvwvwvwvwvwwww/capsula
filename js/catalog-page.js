@@ -147,4 +147,8 @@
   syncUrl();
   }
   window.addEventListener("sitechrome:mounted", run, { once: true });
+  document.addEventListener("DOMContentLoaded", () => {
+    const grid = document.getElementById("catalog-grid");
+    if (grid && !grid.children.length) run();
+  }, { once: true });
 })();

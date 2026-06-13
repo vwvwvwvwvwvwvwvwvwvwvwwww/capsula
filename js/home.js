@@ -50,5 +50,7 @@
   fillGrid(document.getElementById("home-featured-men"), men);
   }
   window.addEventListener("sitechrome:mounted", run, { once: true });
-  window.addEventListener("volna:catalog", run);
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!document.getElementById("home-featured-women")?.children.length) run();
+  }, { once: true });
 })();

@@ -182,4 +182,11 @@
     render();
   }
   window.addEventListener("sitechrome:mounted", run, { once: true });
+  document.addEventListener("DOMContentLoaded", () => {
+    const root = document.getElementById("product-root");
+    if (root && root.querySelector("#product-missing") && !root.querySelector("#product-missing").hidden) {
+      const id = new URLSearchParams(location.search).get("id");
+      if (id) run();
+    }
+  }, { once: true });
 })();
