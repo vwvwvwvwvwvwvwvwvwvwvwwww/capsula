@@ -679,8 +679,25 @@ window.CatalogApi = {
     return v;
   },
   async hydrateFromServer() {
+    const CACHE_KEY = "volna_products_cache";
+    const CACHE_TS = "volna_products_cache_ts";
+    const TTL_MS = 5 * 60 * 1000;
+
     try {
       if (location.protocol !== "http:" && location.protocol !== "https:") return false;
+
+      const cachedTs = Number(sessionStorage.getItem(CACHE_TS) || 0);
+      const cachedRaw = sessionStorage.getItem(CACHE_KEY);
+      if (cachedRaw && Date.now() - cachedTs < TTL_MS) {
+        try {
+          const cached = JSON.parse(cachedRaw);
+          if (Array.isArray(cached) && cached.length) {
+            window.CATALOG_PRODUCTS = cached;
+            return false;
+          }
+        } catch (_) {}
+      }
+
       const url =
         typeof window.volnaApiUrl === "function" ? window.volnaApiUrl("/api/products") : "/api/products";
       const res = await fetch(url);
@@ -695,6 +712,10 @@ window.CatalogApi = {
       }
       if (!res.ok || !Array.isArray(data.products)) return false;
       window.CATALOG_PRODUCTS = data.products;
+      try {
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify(data.products));
+        sessionStorage.setItem(CACHE_TS, String(Date.now()));
+      } catch (_) {}
       try {
         window.dispatchEvent(new CustomEvent("volna:catalog"));
       } catch (_) {}

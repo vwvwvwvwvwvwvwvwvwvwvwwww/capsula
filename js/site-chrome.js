@@ -21,6 +21,32 @@
     return window.CartCore ? window.CartCore.totalQty() : 0;
   }
 
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function renderCategoryStrip() {
+    const strip = document.getElementById("site-cat-strip");
+    if (!strip || !window.CatalogApi) return;
+    const g = window.CatalogApi.currentGender();
+    const prods = window.CatalogApi.byGender(g);
+    const inCatalog = new Set(prods.map((p) => p.category));
+    const limeOrder = window.CATALOG_SECTIONS && window.CATALOG_SECTIONS[g];
+    const cats = limeOrder
+      ? limeOrder.filter((c) => inCatalog.has(c))
+      : [...inCatalog].sort((a, b) => a.localeCompare(b, "ru"));
+    strip.innerHTML = cats
+      .map(
+        (c) =>
+          `<a class="site-cat-pill" href="catalog.html?gender=${encodeURIComponent(g)}&category=${encodeURIComponent(c)}">${escapeHtml(c)}</a>`
+      )
+      .join("");
+  }
+
   function renderHeader() {
     const root = document.getElementById("site-header-root");
     if (!root) return;
@@ -72,22 +98,7 @@
       </header>
     `;
 
-    const strip = document.getElementById("site-cat-strip");
-    if (strip && window.CatalogApi && !hideGenderNav) {
-      const g = window.CatalogApi.currentGender();
-      const prods = window.CatalogApi.byGender(g);
-      const inCatalog = new Set(prods.map((p) => p.category));
-      const limeOrder = window.CATALOG_SECTIONS && window.CATALOG_SECTIONS[g];
-      const cats = limeOrder
-        ? limeOrder.filter((c) => inCatalog.has(c))
-        : [...inCatalog].sort((a, b) => a.localeCompare(b, "ru"));
-      strip.innerHTML = cats
-        .map(
-          (c) =>
-            `<a class="site-cat-pill" href="catalog.html?gender=${encodeURIComponent(g)}&category=${encodeURIComponent(c)}">${escapeHtml(c)}</a>`
-        )
-        .join("");
-    }
+    if (!hideGenderNav) renderCategoryStrip();
 
     const burger = document.getElementById("site-nav-burger");
     const list = document.getElementById("site-nav-list");
@@ -103,14 +114,6 @@
     }
   }
 
-  function escapeHtml(s) {
-    return String(s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-  }
-
   function renderFooter() {
     const root = document.getElementById("site-footer-root");
     if (!root) return;
@@ -119,7 +122,7 @@
         <div class="site-wrap site-footer__grid">
           <div>
             <div class="site-logo site-logo--footer">КАПСУЛА</div>
-            <p class="site-footer__muted">Женское и мужское. Фотографии товаров — лицензированные стоки.</p>
+            <p class="site-footer__muted">Женское и мужское. Доставка по России.</p>
           </div>
           <div>
             <div class="site-footer__h">Покупателям</div>
@@ -140,7 +143,7 @@
           </div>
           <div>
             <div class="site-footer__h">Контакты</div>
-            <p>hello@kapsula-style.demo<br />+7 (900) 000-00-00</p>
+            <p>hello@kapsula.ru<br />+7 (900) 000-00-00</p>
           </div>
         </div>
         <div class="site-footer__bar">
@@ -150,13 +153,18 @@
     `;
   }
 
-  async function mount() {
-    if (window.CatalogApi && typeof window.CatalogApi.hydrateFromServer === "function") {
-      await window.CatalogApi.hydrateFromServer();
-    }
+  function mount() {
     renderHeader();
     renderFooter();
     window.dispatchEvent(new CustomEvent("sitechrome:mounted"));
+
+    if (window.CatalogApi && typeof window.CatalogApi.hydrateFromServer === "function") {
+      window.CatalogApi.hydrateFromServer().then((updated) => {
+        if (!updated) return;
+        renderCategoryStrip();
+        window.dispatchEvent(new CustomEvent("volna:catalog"));
+      });
+    }
   }
 
   window.updateCartBadge = function () {

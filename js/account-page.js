@@ -1,13 +1,4 @@
 (function () {
-  if (location.protocol === "file:") {
-    const b = document.createElement("div");
-    b.className = "site-dev-banner";
-    b.setAttribute("role", "alert");
-    b.innerHTML =
-      "<strong>Открыто как файл.</strong> Запустите <code>npm start</code> и зайдите по адресу из терминала.";
-    document.body.insertBefore(b, document.body.firstChild);
-  }
-
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const FETCH_MS = 20000;
 
@@ -53,7 +44,7 @@
         ? data.error.trim()
         : "";
     if (!apiLooksJson && (res.status === 404 || /^not\s*found$/i.test(raw))) {
-      return "API недоступен по этому адресу. В терминале: npm start → откройте URL из консоли (тот же хост и порт).";
+      return "Сервер временно недоступен. Попробуйте позже или обновите страницу.";
     }
     if (raw) return raw;
     return `Ошибка ${res.status}`;
@@ -67,8 +58,6 @@
   const regForm = document.getElementById("form-register");
   const loginErr = document.getElementById("login-err");
   const regErr = document.getElementById("register-err");
-  const pingBtn = document.getElementById("account-ping");
-  const pingOut = document.getElementById("account-ping-result");
 
   function showTab(which) {
     const login = which === "login";
@@ -98,39 +87,6 @@
   if (location.hash === "#register") {
     showTab("register");
     requestAnimationFrame(() => panelRegister && panelRegister.scrollIntoView({ behavior: "smooth", block: "nearest" }));
-  }
-
-  const PING_FAIL_HINT =
-    "Нужен тот же адрес, что выводит npm start (node server.mjs). Live Preview, другой порт или file:// — API не попадёт.";
-
-  if (pingBtn && pingOut) {
-    pingBtn.addEventListener("click", async () => {
-      pingOut.textContent = "…";
-      pingBtn.disabled = true;
-      try {
-        const { res, data, apiLooksJson } = await apiJson("/api/ping", { method: "GET" });
-        const apiPing =
-          res.ok && data && data.ok === true && (data.service === "kapsula" || data.service === "volna");
-        if (apiPing) {
-          pingOut.textContent = "Сервер Капсула на связи.";
-          pingOut.className = "account-tools__hint account-tools__hint--ok";
-        } else if (!res.ok) {
-          pingOut.textContent = `HTTP ${res.status}. ${PING_FAIL_HINT}`;
-          pingOut.className = "account-tools__hint account-tools__hint--bad";
-        } else if (!apiLooksJson || (data.service !== "kapsula" && data.service !== "volna")) {
-          pingOut.textContent = `Ответ ${res.status}, но это не /api/ping Капсула (часто HTML вместо JSON). ${PING_FAIL_HINT}`;
-          pingOut.className = "account-tools__hint account-tools__hint--bad";
-        } else {
-          pingOut.textContent = `Ответ не тот (ожидалось service «kapsula»). ${PING_FAIL_HINT}`;
-          pingOut.className = "account-tools__hint account-tools__hint--bad";
-        }
-      } catch {
-        pingOut.textContent = "Нет ответа.";
-        pingOut.className = "account-tools__hint account-tools__hint--bad";
-      } finally {
-        pingBtn.disabled = false;
-      }
-    });
   }
 
   function showErr(el, msg) {
@@ -186,10 +142,7 @@
           data.user === null ||
           Array.isArray(data.user)
         ) {
-          showErr(
-            loginErr,
-            "Ответ не похож на API Капсула (нет JSON с полем user). " + PING_FAIL_HINT,
-          );
+          showErr(loginErr, "Сервер вернул неожиданный ответ. Попробуйте обновить страницу.");
           return;
         }
         try {
@@ -200,9 +153,9 @@
         await showAccountDashboard(data.user);
       } catch (err) {
         if (err && err.name === "AbortError") {
-          showErr(loginErr, "Таймаут. Проверьте npm start.");
+          showErr(loginErr, "Превышено время ожидания. Попробуйте позже.");
         } else {
-          showErr(loginErr, "Сеть: нет ответа. Тот же хост, что в консоли npm start.");
+          showErr(loginErr, "Нет связи с сервером. Проверьте подключение к интернету.");
         }
       } finally {
         setBusy(loginForm, false);
@@ -249,10 +202,7 @@
           data.user === null ||
           Array.isArray(data.user)
         ) {
-          showErr(
-            regErr,
-            "Ответ не похож на API Капсула (нет JSON с полем user). " + PING_FAIL_HINT,
-          );
+          showErr(regErr, "Сервер вернул неожиданный ответ. Попробуйте обновить страницу.");
           return;
         }
         try {
@@ -263,7 +213,7 @@
         await showAccountDashboard(data.user);
       } catch (err) {
         if (err && err.name === "AbortError") {
-          showErr(regErr, "Таймаут. Проверьте npm start.");
+          showErr(regErr, "Превышено время ожидания. Попробуйте позже.");
         } else {
           showErr(regErr, "Сеть: нет ответа.");
         }
@@ -440,9 +390,6 @@
       await apiJson("/api/logout", { method: "POST", body: {} });
       if (window.VolnaApi && window.VolnaApi.refreshMe) await window.VolnaApi.refreshMe();
       setAuthVisible(false);
-      document.querySelectorAll(".account-demo").forEach((el) => {
-        el.hidden = false;
-      });
       showOrdersList();
     });
   }
@@ -455,9 +402,6 @@
       return;
     }
     setAuthVisible(true);
-    document.querySelectorAll(".account-demo").forEach((el) => {
-      el.hidden = true;
-    });
     if (greeting) {
       greeting.textContent = user.name
         ? `Здравствуйте, ${user.name}`

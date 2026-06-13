@@ -4,13 +4,17 @@
 import http from "node:http";
 import fs from "node:fs/promises";
 import path from "node:path";
+import zlib from "node:zlib";
+import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import { createStore } from "./lib/store.mjs";
 import { readProducts, writeProducts, validateProducts, getProductsPath } from "./lib/products-persist.mjs";
 import { loadEnv } from "./lib/load-env.mjs";
+import { sendPreorderEmails, isMailConfigured, verifySmtpConnection } from "./lib/mail.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname);
+process.env.APP_ROOT = ROOT;
 loadEnv(ROOT);
 const PORT = Number(process.env.PORT, 10) || 3333;
 const DB_PATH = process.env.DB_PATH || path.join(ROOT, "data", "app.db");
@@ -253,7 +257,18 @@ async function handleApi(req, res) {
       if (body === null || typeof body !== "object") return sendJson(res, 400, { error: "Некорректный JSON" });
       const u = requireUser(req);
       const { id } = store.createPreorder(u ? u.id : null, body);
-      return sendJson(res, 201, { id, ok: true });
+      let mail = { ok: false, skipped: true };
+      try {
+        mail = await sendPreorderEmails({
+          orderId: id,
+          payload: body,
+          accountEmail: u?.email || null,
+        });
+      } catch (mailErr) {
+        console.error("[КАПСУЛА] Ошибка отправки e-mail:", mailErr);
+        mail = { ok: false, error: mailErr.message || "Ошибка почты" };
+      }
+      return sendJson(res, 201, { id, ok: true, mail });
     }
 
     return sendJson(res, 404, { error: "Метод не найден" });
@@ -261,6 +276,35 @@ async function handleApi(req, res) {
     console.error(err);
     return sendJson(res, 500, { error: "Внутренняя ошибка сервера" });
   }
+}
+
+const gzipAsync = promisify(zlib.gzip);
+
+const COMPRESSIBLE = new Set([".html", ".js", ".mjs", ".css", ".json", ".svg"]);
+
+function cacheControlFor(ext) {
+  if (ext === ".html") return "no-cache";
+  if ([".js", ".mjs", ".css", ".json"].includes(ext)) return "public, max-age=3600";
+  if ([".png", ".jpg", ".jpeg", ".webp", ".svg", ".ico"].includes(ext)) return "public, max-age=86400";
+  return "public, max-age=300";
+}
+
+async function respondStatic(req, res, data, contentType, ext) {
+  const headers = {
+    "Content-Type": contentType,
+    "Cache-Control": cacheControlFor(ext),
+  };
+  const accept = String(req.headers["accept-encoding"] || "");
+  if (COMPRESSIBLE.has(ext) && data.length > 512 && accept.includes("gzip")) {
+    const gz = await gzipAsync(data);
+    headers["Content-Encoding"] = "gzip";
+    headers["Vary"] = "Accept-Encoding";
+    res.writeHead(200, headers);
+    res.end(gz);
+    return;
+  }
+  res.writeHead(200, headers);
+  res.end(data);
 }
 
 async function handleStatic(req, res) {
@@ -277,14 +321,12 @@ async function handleStatic(req, res) {
     if (stat.isDirectory()) {
       const indexPath = path.join(filePath, "index.html");
       const data = await fs.readFile(indexPath);
-      res.writeHead(200, { "Content-Type": MIME[".html"] });
-      res.end(data);
+      await respondStatic(req, res, data, MIME[".html"], ".html");
       return;
     }
     const data = await fs.readFile(filePath);
     const ext = path.extname(filePath).toLowerCase();
-    res.writeHead(200, { "Content-Type": MIME[ext] || "application/octet-stream" });
-    res.end(data);
+    await respondStatic(req, res, data, MIME[ext] || "application/octet-stream", ext);
   } catch (err) {
     if (err && err.code === "ENOENT") {
       res.writeHead(404);
@@ -338,6 +380,24 @@ function bindServer(p) {
     console.log(
       "Вход: откройте страницу по адресу выше (не смешивайте 127.0.0.1 и localhost — куки разные)."
     );
+    if (!isMailConfigured()) {
+      console.warn(
+        "Почта: SMTP не настроен — письма сохраняются в data/mail-outbox. Задайте SMTP_HOST, SMTP_USER, SMTP_PASS в .env или Railway Variables."
+      );
+    } else {
+      verifySmtpConnection()
+        .then((r) => {
+          if (r.ok) {
+            console.log("Почта: SMTP подключён — уведомления о предзаказах включены.");
+          } else {
+            console.warn(`Почта: SMTP настроен, но подключение не удалось: ${r.error}`);
+            console.warn("Письма будут сохраняться в data/mail-outbox до исправления SMTP_PASS.");
+          }
+        })
+        .catch((err) => {
+          console.warn("Почта: не удалось проверить SMTP:", err?.message || err);
+        });
+    }
   });
 }
 

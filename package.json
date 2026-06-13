@@ -10,9 +10,11 @@
     "create-admin": "node scripts/create-admin.mjs",
     "import-lime": "node scripts/import-lime-catalog.mjs",
     "seed-clients": "node scripts/seed-clients.mjs",
-    "enrich-sizes": "node scripts/enrich-product-sizes.mjs"
+    "enrich-sizes": "node scripts/enrich-product-sizes.mjs",
+    "test-mail": "node scripts/test-mail.mjs"
   },
   "dependencies": {
-    "better-sqlite3": "^11.8.1"
+    "better-sqlite3": "^11.8.1",
+    "nodemailer": "^8.0.7"
   }
 }

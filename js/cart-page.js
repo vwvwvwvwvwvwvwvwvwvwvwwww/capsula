@@ -87,6 +87,15 @@
       const r = await window.VolnaApi.submitPreorder(payload);
       if (r.ok) {
         serverMsg = `Сохранено в базе, номер заявки: ${r.id}.`;
+        if (r.mail?.ok) {
+          serverMsg += " Уведомление отправлено на e-mail.";
+        } else if (r.mail?.skipped) {
+          serverMsg += " Почта не настроена — заявка сохранена на сервере.";
+        } else if (r.mail?.outbox?.length) {
+          serverMsg += " Письмо сохранено в очередь на сервере (SMTP временно недоступен).";
+        } else if (r.mail?.error) {
+          serverMsg += " Письмо не отправилось, но заявка сохранена.";
+        }
       }
       else if (r.error !== "offline") {
         okEl.hidden = false;
@@ -113,7 +122,7 @@
       : "";
     const successHtml = serverMsg
       ? `Заявка принята. ${serverMsg}${accountHint}`
-      : "Заявка принята (локально). Запустите сервер «npm start», чтобы писать заявки в SQLite.";
+      : "Заявка принята. Сейчас сервер недоступен — попробуйте отправить заявку позже.";
     window.CartCore.clear();
     render();
     okEl.innerHTML = successHtml;

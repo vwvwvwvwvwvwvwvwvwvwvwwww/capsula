@@ -99,7 +99,7 @@
         const { res, data } = await apiJson("/api/preorders", { method: "POST", body: payload });
         if (!res.ok) return { ok: false, error: data.error || `Ошибка ${res.status}` };
         const mail = data.mail || data.email;
-        return { ok: true, id: data.id, email: mail };
+        return { ok: true, id: data.id, mail };
       } catch {
         return { ok: false, error: "offline" };
       }

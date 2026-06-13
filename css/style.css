@@ -1394,19 +1394,6 @@ a:hover {
   color: #b00020;
 }
 
-.account-demo {
-  margin: 0 22px 8px;
-  padding-top: 12px;
-  font-size: 0.78rem;
-  color: var(--muted);
-  line-height: 1.45;
-  border-top: 1px solid var(--line);
-}
-
-.account-demo--clients {
-  margin-bottom: 18px;
-}
-
 .account-dashboard {
   margin: 0 auto 24px;
 }
@@ -1645,17 +1632,30 @@ a:hover {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
+  min-width: 0;
 }
 
 .admin-card {
   border: 1px solid var(--line);
   padding: 20px;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .admin-table {
   width: 100%;
+  min-width: 520px;
   border-collapse: collapse;
   font-size: 0.85rem;
+}
+
+#admin-products-table {
+  min-width: 680px;
+}
+
+#admin-preorders-table {
+  min-width: 760px;
 }
 
 .admin-table th,
@@ -1871,6 +1871,10 @@ a:hover {
     grid-template-columns: 1fr;
   }
 
+  .admin-page {
+    padding-top: 24px;
+  }
+
   .site-footer__grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -1910,6 +1914,38 @@ a:hover {
 }
 
 @media (max-width: 640px) {
+  .admin-page {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .admin-page > .site-wrap {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .admin-card {
+    padding: 14px;
+  }
+
+  .admin-products-toolbar,
+  .admin-modal__actions {
+    flex-direction: column;
+  }
+
+  .admin-products-toolbar .btn,
+  .admin-modal__actions .btn {
+    width: 100%;
+  }
+
+  .admin-modal-backdrop {
+    padding: 10px;
+  }
+
+  .admin-modal {
+    padding: 16px;
+  }
+
   .gender-hero {
     grid-template-columns: 1fr;
   }

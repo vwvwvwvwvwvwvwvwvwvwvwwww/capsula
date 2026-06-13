@@ -292,8 +292,7 @@
     const me = await apiJson("/api/me");
     const user = me.data.user;
     if (!user || user.role !== "admin") {
-      gate.textContent =
-        "Доступ запрещён. Войдите под учётной записью администратора (см. консоль сервера при первом запуске: ADMIN_EMAIL / ADMIN_PASSWORD).";
+      gate.textContent = "Доступ запрещён. Войдите под учётной записью администратора.";
       return;
     }
     gate.hidden = true;

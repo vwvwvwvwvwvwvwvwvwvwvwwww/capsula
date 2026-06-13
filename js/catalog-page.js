@@ -98,11 +98,15 @@
     const list = filtered();
     empty.hidden = list.length > 0;
     grid.innerHTML = "";
-    list.forEach((p) => {
+    list.forEach((p, i) => {
       const wrap = document.createElement("div");
       wrap.className = "tile-product";
+      const imgAttrs =
+        i < 4
+          ? 'loading="eager" fetchpriority="high" decoding="async"'
+          : 'loading="lazy" decoding="async"';
       wrap.innerHTML = `
-        <a href="product.html?id=${encodeURIComponent(p.id)}"><img class="tile-product__img" src="${attrUrl(p.image)}" alt="${esc(p.title)}" loading="lazy" width="400" height="533" /></a>
+        <a href="product.html?id=${encodeURIComponent(p.id)}"><img class="tile-product__img" src="${attrUrl(p.image)}" alt="${esc(p.title)}" ${imgAttrs} width="400" height="533" /></a>
         <div class="tile-product__body">
           <a class="tile-product__head" href="product.html?id=${encodeURIComponent(p.id)}">
             <div class="tile-product__cat">${esc(p.category)}</div>

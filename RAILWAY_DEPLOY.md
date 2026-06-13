@@ -49,6 +49,20 @@ DB_PATH=/data/app.db
 PRODUCTS_PATH=/data/products.json
 ```
 
+Для уведомлений о предзаказах через Gmail или другой SMTP (не Яндекс):
+
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_SECURE=1
+SMTP_USER=your@gmail.com
+SMTP_PASS=app_password
+MAIL_FROM=Капсула <your@gmail.com>
+MAIL_TO=manager@example.com
+```
+
+Для Gmail нужен **App Password**: включите двухфакторную защиту в аккаунте Google и создайте пароль приложения. Для другого почтового сервиса замените `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` на данные провайдера.
+
 ### Порт и домен (Networking)
 
 На **вашем компьютере** порты 3333 / 8080 «заняты» или свободны — на Railway это **не важно**: там отдельный контейнер.
