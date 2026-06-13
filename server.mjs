@@ -285,7 +285,7 @@ const COMPRESSIBLE = new Set([".html", ".js", ".mjs", ".css", ".json", ".svg"]);
 
 function cacheControlFor(ext) {
   if (ext === ".html") return "no-cache";
-  if ([".js", ".mjs", ".css", ".json"].includes(ext)) return "public, max-age=3600";
+  if ([".js", ".mjs", ".css", ".json"].includes(ext)) return "no-cache";
   if ([".png", ".jpg", ".jpeg", ".webp", ".svg", ".ico"].includes(ext)) return "public, max-age=86400";
   return "public, max-age=300";
 }

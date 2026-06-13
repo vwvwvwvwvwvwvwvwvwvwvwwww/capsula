@@ -1,5 +1,7 @@
 (function () {
+  let booted = false;
   function run() {
+  if (booted) return;
   const CA = window.CatalogApi;
   if (!CA) return;
 
@@ -145,10 +147,9 @@
   renderChips();
   renderGrid();
   syncUrl();
+  booted = true;
+  if (window.VolnaMotion && window.VolnaMotion.scan) window.VolnaMotion.scan(document.body);
   }
-  window.addEventListener("sitechrome:mounted", run, { once: true });
-  document.addEventListener("DOMContentLoaded", () => {
-    const grid = document.getElementById("catalog-grid");
-    if (grid && !grid.children.length) run();
-  }, { once: true });
+  document.addEventListener("DOMContentLoaded", run, { once: true });
+  window.addEventListener("volna:catalog", run);
 })();
