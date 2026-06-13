@@ -50,4 +50,5 @@
   fillGrid(document.getElementById("home-featured-men"), men);
   }
   window.addEventListener("sitechrome:mounted", run, { once: true });
+  window.addEventListener("volna:catalog", run);
 })();

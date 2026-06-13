@@ -1,5 +1,5 @@
 /**
- * Каталог Капсула — товары и фото с lime-shop.com (личный просмотр).
+ * Каталог товаров Капсула.
  * Размеры: scripts/enrich-product-sizes.mjs
  */
 function u(url) {
@@ -710,7 +710,7 @@ window.CatalogApi = {
           return false;
         }
       }
-      if (!res.ok || !Array.isArray(data.products)) return false;
+      if (!res.ok || !Array.isArray(data.products) || !data.products.length) return false;
       window.CATALOG_PRODUCTS = data.products;
       try {
         sessionStorage.setItem(CACHE_KEY, JSON.stringify(data.products));
