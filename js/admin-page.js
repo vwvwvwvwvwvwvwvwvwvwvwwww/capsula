@@ -338,7 +338,7 @@
     gate.hidden = true;
     content.hidden = false;
 
-    await loadMailStatus();
+    void loadMailStatus();
     if (mailTestBtn && !mailTestBtn.dataset.bound) {
       mailTestBtn.dataset.bound = "1";
       mailTestBtn.addEventListener("click", async () => {
@@ -464,7 +464,5 @@
     if (btnSaveProducts) btnSaveProducts.addEventListener("click", saveProductCatalog);
   }
 
-  window.addEventListener("sitechrome:mounted", () => {
-    setTimeout(init, 80);
-  });
+  document.addEventListener("DOMContentLoaded", () => setTimeout(init, 0), { once: true });
 })();
