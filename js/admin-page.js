@@ -304,18 +304,22 @@
         .map((p) => p.label)
         .join(", ");
       mailStatusEl.innerHTML =
-        "<strong>SMTP не настроен.</strong> Письма не отправляются — заявки только в базе.<br>" +
-        "Минимум в Railway Variables: <code>SMTP_USER</code>, <code>SMTP_PASS</code>, <code>MAIL_TO</code>. " +
-        "Хост подставится сам (Яндекс, Mail.ru, Gmail…).<br>" +
-        (providers ? `Поддерживаются: ${esc(providers)}.` : "");
+        "<strong>Почта не настроена.</strong> Письма не отправляются — заявки только в базе.<br>" +
+        "<strong>Railway Hobby блокирует SMTP.</strong> Используйте <code>BREVO_API_KEY</code> (HTTPS) — бесплатно на brevo.com.<br>" +
+        "Или тариф Railway Pro для SMTP Mail.ru.<br>" +
+        (providers ? `SMTP-провайдеры (только Pro): ${esc(providers)}.` : "");
       if (mailTestBtn) mailTestBtn.hidden = true;
       return;
     }
     const lines = [
-      data.providerLabel
-        ? `Провайдер: <strong>${esc(data.providerLabel)}</strong>${data.autoDetected ? " (хост определён по e-mail)" : ""}`
-        : null,
-      `SMTP: ${esc(data.host)}:${data.port}, от ${esc(data.user)}`,
+      data.transport === "https"
+        ? `Транспорт: <strong>${esc(data.providerLabel || "HTTPS API")}</strong> (работает на Railway Hobby)`
+        : data.providerLabel
+          ? `Провайдер: <strong>${esc(data.providerLabel)}</strong>${data.autoDetected ? " (хост по e-mail)" : ""}`
+          : null,
+      data.transport === "https"
+        ? `Отправитель: ${esc(data.user)}`
+        : `SMTP: ${esc(data.host)}:${data.port}, от ${esc(data.user)}`,
       `Получатель заявок (MAIL_TO): ${esc(data.mailTo || "—")}`,
       data.verified
         ? "<strong style=\"color:var(--ok,#0a7)\">Подключение успешно — письма должны уходить.</strong>"
