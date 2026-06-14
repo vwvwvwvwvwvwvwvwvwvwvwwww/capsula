@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://cache-limeshop.cdnvideo.ru" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" /></noscript>
-  <link rel="stylesheet" href="css/style.css?v=2" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
 </head>
 <body>
   <div id="site-header-root"></div>
@@ -34,13 +34,68 @@
             <input id="pf-phone" name="phone" required inputmode="tel" autocomplete="tel" />
           </div>
           <div class="form__row">
-            <label for="pf-email">E-mail</label>
-            <input id="pf-email" name="email" type="email" autocomplete="email" />
+            <label for="pf-email">E-mail *</label>
+            <input id="pf-email" name="email" type="email" required autocomplete="email" />
           </div>
           <div class="form__row">
             <label for="pf-city">Город</label>
             <input id="pf-city" name="city" autocomplete="address-level2" />
           </div>
+          <fieldset class="form__row payment-methods">
+            <legend class="payment-methods__legend">Способ оплаты *</legend>
+            <label class="payment-methods__option">
+              <input type="radio" name="paymentMethod" value="cash" required />
+              <span class="payment-methods__text">
+                <strong>Наличные</strong>
+                <small>При получении заказа или в шоуруме</small>
+              </span>
+            </label>
+            <label class="payment-methods__option">
+              <input type="radio" name="paymentMethod" value="transfer" required />
+              <span class="payment-methods__text">
+                <strong>Перевод / СБП</strong>
+                <small>Реквизиты пришлём после подтверждения заказа</small>
+              </span>
+            </label>
+            <label class="payment-methods__option">
+              <input type="radio" name="paymentMethod" value="showroom" required />
+              <span class="payment-methods__text">
+                <strong>В шоуруме</strong>
+                <small>Оплата при примерке и выдаче</small>
+              </span>
+            </label>
+          </fieldset>
+          <fieldset class="form__row delivery-methods">
+            <legend class="delivery-methods__legend">Способ доставки *</legend>
+            <label class="delivery-methods__option">
+              <input type="radio" name="deliveryMethod" value="pickup" required />
+              <span class="delivery-methods__text">
+                <strong>Самовывоз</strong>
+                <small>Забрать заказ в шоуруме Капсулы</small>
+              </span>
+            </label>
+            <label class="delivery-methods__option">
+              <input type="radio" name="deliveryMethod" value="courier" required />
+              <span class="delivery-methods__text">
+                <strong>Курьер</strong>
+                <small>Доставка по городу — адрес уточним по телефону</small>
+              </span>
+            </label>
+            <label class="delivery-methods__option">
+              <input type="radio" name="deliveryMethod" value="pvz" required />
+              <span class="delivery-methods__text">
+                <strong>Пункт выдачи</strong>
+                <small>СДЭК, Boxberry и другие ПВЗ</small>
+              </span>
+            </label>
+            <label class="delivery-methods__option">
+              <input type="radio" name="deliveryMethod" value="postal" required />
+              <span class="delivery-methods__text">
+                <strong>Почта России</strong>
+                <small>Доставка в отделение по индексу</small>
+              </span>
+            </label>
+          </fieldset>
           <div class="form__row">
             <label for="pf-comment">Комментарий</label>
             <textarea id="pf-comment" name="comment" rows="3"></textarea>
@@ -60,10 +115,10 @@
   <script defer src="js/volna-api.js?v=2"></script>
   <script defer src="js/catalog-sections.js?v=2"></script>
   <script defer src="js/products.js?v=2"></script>
-  <script defer src="js/cart-core.js?v=2"></script>
+  <script defer src="js/cart-core.js?v=3"></script>
   <script defer src="js/site-chrome.js?v=2"></script>
   <script defer src="js/auth-pages.js?v=2"></script>
-  <script defer src="js/cart-page.js?v=2"></script>
+  <script defer src="js/cart-page.js?v=4"></script>
   <script defer src="js/motion.js?v=2"></script>
 </body>
 </html>

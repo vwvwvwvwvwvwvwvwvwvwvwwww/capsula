@@ -35,15 +35,15 @@
     document.title = `${p.title} — Капсула`;
     const backHref = `catalog.html?gender=${encodeURIComponent(p.gender || "women")}`;
 
-    const sizes = SC ? SC.productSizes(p) : p.sizes || ["M"];
+    const sizes = SC ? SC.productSizes(p) : p.sizes || [];
     const chartId = SC ? SC.resolveChartId(p) : p.sizeChart;
     const chart = SC ? SC.getChart(chartId) : null;
-    let selectedSize = sizes[0];
+    let selectedSize = "";
 
     function sizeButtonsHtml() {
       return sizes
         .map((s) => {
-          const active = s === selectedSize;
+          const active = selectedSize && s === selectedSize;
           return `<button type="button" class="size-picker__btn${active ? " is-active" : ""}" data-size="${esc(s)}" aria-pressed="${active ? "true" : "false"}">${esc(s)}</button>`;
         })
         .join("");
@@ -52,16 +52,26 @@
     function updateSizeUi(rootEl) {
       const active = selectedSize;
       rootEl.querySelectorAll(".size-picker__btn").forEach((b) => {
-        const on = b.dataset.size === active;
+        const on = Boolean(active) && b.dataset.size === active;
         b.classList.toggle("is-active", on);
         b.setAttribute("aria-pressed", on ? "true" : "false");
       });
       const val = rootEl.querySelector("#size-selected");
-      if (val) val.textContent = active;
+      if (val) val.textContent = active || "—";
       const cartSize = rootEl.querySelector("#cart-size-label");
-      if (cartSize) cartSize.textContent = active;
+      const addBtn = rootEl.querySelector("#btn-add-cart");
+      if (addBtn) {
+        addBtn.disabled = !active;
+        if (active) {
+          addBtn.innerHTML = `В корзину · <span id="cart-size-label">${esc(active)}</span>`;
+        } else {
+          addBtn.textContent = "Выберите размер";
+        }
+      } else if (cartSize) {
+        cartSize.textContent = active || "—";
+      }
       const table = rootEl.querySelector("#size-chart-table");
-      if (table && SC) table.innerHTML = SC.renderChartTableHtml(chart, active);
+      if (table && SC) table.innerHTML = SC.renderChartTableHtml(chart, active || sizes[0]);
       const err = rootEl.querySelector("#size-err");
       if (err) err.hidden = true;
     }
@@ -72,7 +82,7 @@
         <details class="size-chart">
           <summary class="size-chart__toggle">Таблица размеров · ${esc(chart.title)}</summary>
           <div class="size-chart__body" id="size-chart-table">
-            ${SC.renderChartTableHtml(chart, selectedSize)}
+            ${SC.renderChartTableHtml(chart, selectedSize || sizes[0])}
           </div>
         </details>`;
     }
@@ -135,16 +145,16 @@
       <div class="product-page__sizes">
         <div class="size-selected-banner" aria-live="polite">
           <span class="size-selected-banner__label">Ваш размер</span>
-          <span class="size-selected-banner__value" id="size-selected">${esc(selectedSize)}</span>
+          <span class="size-selected-banner__value" id="size-selected">—</span>
         </div>
-        <p class="size-picker__hint">Нажмите на размер, чтобы изменить</p>
+        <p class="size-picker__hint">Сначала выберите размер</p>
         <div class="size-picker" id="size-picker" role="group" aria-label="Выбор размера">
           ${sizeButtonsHtml()}
         </div>
       </div>
       ${chartBlockHtml()}
       <div class="product-page__actions">
-        <button type="button" class="btn btn--primary" id="btn-add-cart">В корзину · <span id="cart-size-label">${esc(selectedSize)}</span></button>
+        <button type="button" class="btn btn--primary" id="btn-add-cart" disabled>Выберите размер</button>
         <a class="btn btn--outline" href="${backHref}">Назад в каталог</a>
       </div>
       <p class="product-page__size-hint" id="size-err" hidden role="alert">Выберите размер</p>
@@ -159,6 +169,8 @@
         });
       });
 
+      updateSizeUi(root);
+
       const addBtn = document.getElementById("btn-add-cart");
       addBtn.addEventListener("click", () => {
         if (!selectedSize) {
@@ -166,7 +178,9 @@
           if (err) err.hidden = false;
           return;
         }
+        const before = window.CartCore.totalQty();
         window.CartCore.add(p.id, selectedSize);
+        if (window.CartCore.totalQty() === before) return;
         if (window.updateCartBadge) window.updateCartBadge();
         addBtn.classList.add("is-added");
         const prev = addBtn.dataset.label || addBtn.textContent;

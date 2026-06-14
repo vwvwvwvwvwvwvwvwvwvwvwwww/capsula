@@ -306,15 +306,16 @@
       mailStatusEl.innerHTML =
         "<strong>Почта не настроена.</strong> Письма не отправляются — заявки только в базе.<br>" +
         "<strong>Railway Hobby блокирует SMTP.</strong> Для России: <code>UNISENDER_GO_API_KEY</code> (go.unisender.ru).<br>" +
-        "Или <code>UNISENDER_API_KEY</code> + <code>UNISENDER_LIST_ID</code> (unisender.com, бесплатно).<br>" +
+        "Или <code>UNISENDER_API_KEY</code> + <code>UNISENDER_LIST_ID</code> (unisender.com, бесплатно). Контакты в список добавляются автоматически.<br>" +
         "Или тариф Railway Pro для SMTP Mail.ru.<br>" +
         (providers ? `SMTP-провайдеры (только Pro): ${esc(providers)}.` : "");
       if (mailTestBtn) mailTestBtn.hidden = true;
       return;
     }
+    const diag = data.envDiag || {};
     const lines = [
       data.transport === "https"
-        ? `Транспорт: <strong>${esc(data.providerLabel || "HTTPS API")}</strong> (работает на Railway Hobby)`
+        ? `Транспорт: <strong>${esc(data.providerLabel || "HTTPS API")}</strong> (HTTPS API)`
         : data.providerLabel
           ? `Провайдер: <strong>${esc(data.providerLabel)}</strong>${data.autoDetected ? " (хост по e-mail)" : ""}`
           : null,
@@ -322,12 +323,19 @@
         ? `Отправитель: ${esc(data.user)}`
         : `SMTP: ${esc(data.host)}:${data.port}, от ${esc(data.user)}`,
       `Получатель заявок (MAIL_TO): ${esc(data.mailTo || "—")}`,
+      diag.forcedSmtp ? "Режим: <strong>MAIL_TRANSPORT=smtp</strong> (UniSender игнорируется)" : null,
       data.verified
         ? "<strong style=\"color:var(--ok,#0a7)\">Подключение успешно — письма должны уходить.</strong>"
-        : `<strong style="color:var(--err,#c00)">Ошибка SMTP:</strong> ${esc(data.error || "неизвестно")}`,
+        : `<strong style="color:var(--err,#c00)">Ошибка:</strong> ${esc(data.error || "неизвестно")}`,
     ].filter(Boolean);
     if (!data.verified && data.authHint) {
       lines.push(esc(data.authHint));
+    }
+    if (data.transport === "https" && (diag.hasUnisenderGo || diag.hasUnisenderClassic)) {
+      lines.push(
+        "<strong style=\"color:var(--err,#c00)\">В Railway всё ещё заданы UNISENDER_* переменные.</strong> " +
+          "Удалите их, добавьте <code>MAIL_TRANSPORT=smtp</code> и сделайте <strong>Redeploy</strong>.",
+      );
     }
     mailStatusEl.innerHTML = lines.map((l) => `<span style="display:block;margin:0 0 6px">${l}</span>`).join("");
     if (mailTestBtn) mailTestBtn.hidden = !data.verified;
@@ -413,13 +421,15 @@
             dateStr = String(p.createdAt);
           }
         }
+        const payment = p.paymentLabel || "—";
+        const delivery = p.deliveryLabel || "—";
         const opts = statusOptions
           .map(
             ([v, label]) =>
               `<option value="${v}"${p.status === v ? " selected" : ""}>${esc(label)}</option>`
           )
           .join("");
-        tr.innerHTML = `<td>${p.id}</td><td>${esc(client)}</td><td>${phoneHtml}</td><td><select class="admin-status-select" data-id="${p.id}">${opts}</select></td><td>${esc(sum)}</td><td>${esc(dateStr)}</td><td><button type="button" class="btn-link js-po" data-id="${p.id}">JSON</button></td>`;
+        tr.innerHTML = `<td>${p.id}</td><td>${esc(client)}</td><td>${phoneHtml}</td><td>${esc(delivery)}</td><td>${esc(payment)}</td><td><select class="admin-status-select" data-id="${p.id}">${opts}</select></td><td>${esc(sum)}</td><td>${esc(dateStr)}</td><td><button type="button" class="btn-link js-po" data-id="${p.id}">JSON</button></td>`;
         preBody.appendChild(tr);
       });
       preBody.querySelectorAll(".admin-status-select").forEach((sel) => {

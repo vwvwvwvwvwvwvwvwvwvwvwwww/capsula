@@ -29,16 +29,10 @@
             <h3 class="tile-product__title">${esc(p.title)}</h3>
           </a>
           <p class="tile-product__price">${fmt.format(p.price)}</p>
-          <button type="button" class="btn btn--sm btn--primary js-add-cart" data-id="${esc(p.id)}">В корзину</button>
+          <a class="btn btn--sm btn--outline" href="product.html?id=${encodeURIComponent(p.id)}">Выбрать размер</a>
         </div>
       `;
         gridEl.appendChild(wrap);
-      });
-      gridEl.querySelectorAll(".js-add-cart").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          window.CartCore.add(btn.dataset.id);
-          if (window.updateCartBadge) window.updateCartBadge();
-        });
       });
     }
 

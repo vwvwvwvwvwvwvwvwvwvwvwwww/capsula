@@ -351,6 +351,14 @@
     const o = data.order;
     const lines = Array.isArray(o.lines) ? o.lines : o.payload?.lines || [];
     const customer = o.payload?.customer || {};
+    const paymentLabel =
+      window.PaymentMethods && customer.paymentMethod
+        ? window.PaymentMethods.label(customer.paymentMethod)
+        : "";
+    const deliveryLabel =
+      window.DeliveryMethods && customer.deliveryMethod
+        ? window.DeliveryMethods.label(customer.deliveryMethod)
+        : "";
     const linesHtml = lines.length
       ? `<table class="order-detail__table"><thead><tr><th>Товар</th><th>Размер</th><th>Кол-во</th><th>Цена</th></tr></thead><tbody>${lines
           .map((l) => {
@@ -369,6 +377,8 @@
       </div>
       <p class="order-detail__meta">${escHtml(formatDate(o.createdAt))}</p>
       <p class="order-detail__total">Сумма: <strong>${o.total != null ? escHtml(fmtMoney.format(o.total)) : "—"}</strong></p>
+      ${deliveryLabel ? `<p class="order-detail__delivery">Доставка: <strong>${escHtml(deliveryLabel)}</strong></p>` : ""}
+      ${paymentLabel ? `<p class="order-detail__payment">Оплата: <strong>${escHtml(paymentLabel)}</strong></p>` : ""}
       ${
         customer.name || customer.phone
           ? `<p class="order-detail__customer">${escHtml([customer.name, customer.phone, customer.email].filter(Boolean).join(" · "))}</p>`

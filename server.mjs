@@ -11,6 +11,9 @@ import { createStore } from "./lib/store.mjs";
 import { readProducts, writeProducts, validateProducts, getProductsPath, ensureProductsFile } from "./lib/products-persist.mjs";
 import { loadEnv } from "./lib/load-env.mjs";
 import { sendPreorderEmails, sendOrderStatusEmail, isMailConfigured, verifySmtpConnection, getMailStatus } from "./lib/mail.mjs";
+import { bootstrapUniSenderContacts } from "./lib/mail-http.mjs";
+import { normalizePaymentMethod } from "./lib/payment-methods.mjs";
+import { normalizeDeliveryMethod } from "./lib/delivery-methods.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname);
@@ -24,6 +27,20 @@ const DB_PATH = process.env.DB_PATH || path.join(ROOT, "data", "app.db");
 
 const store = createStore(DB_PATH);
 ensureProductsFile(ROOT);
+
+void bootstrapUniSenderContacts(store.listNotificationEmails()).then((boot) => {
+  if (boot.skipped) return;
+  const n = boot.subscribed?.length || 0;
+  if (n) console.log(`[mail] UniSender: в список добавлено адресов: ${n}`);
+  if (!boot.sender?.confirmed && boot.sender?.hint) {
+    console.warn(`[mail] UniSender: ${boot.sender.hint}`);
+  }
+  if (boot.failed?.length) {
+    console.warn(`[mail] UniSender: не добавлены: ${boot.failed.map((f) => f.email).join(", ")}`);
+  }
+}).catch((err) => {
+  console.warn("[mail] UniSender bootstrap:", err.message || err);
+});
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -307,6 +324,18 @@ async function handleApi(req, res) {
     if (method === "POST" && p === "/api/preorders") {
       const body = await readJsonBody(req);
       if (body === null || typeof body !== "object") return sendJson(res, 400, { error: "Некорректный JSON" });
+      const paymentMethod = normalizePaymentMethod(body?.customer?.paymentMethod);
+      if (!paymentMethod) {
+        return sendJson(res, 400, { error: "Выберите способ оплаты" });
+      }
+      const deliveryMethod = normalizeDeliveryMethod(body?.customer?.deliveryMethod);
+      if (!deliveryMethod) {
+        return sendJson(res, 400, { error: "Выберите способ доставки" });
+      }
+      if (body.customer && typeof body.customer === "object") {
+        body.customer.paymentMethod = paymentMethod;
+        body.customer.deliveryMethod = deliveryMethod;
+      }
       const u = requireUser(req);
       const { id } = store.createPreorder(u ? u.id : null, body);
       let mail = { ok: false, skipped: true };

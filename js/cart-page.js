@@ -66,8 +66,32 @@
     if (!cart.length) return;
 
     const fd = new FormData(form);
+    const raw = Object.fromEntries(fd.entries());
+    const paymentMethod = String(raw.paymentMethod || "").trim();
+    const deliveryMethod = String(raw.deliveryMethod || "").trim();
+    if (!paymentMethod) {
+      okEl.hidden = false;
+      okEl.textContent = "Выберите способ оплаты.";
+      okEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    if (!deliveryMethod) {
+      okEl.hidden = false;
+      okEl.textContent = "Выберите способ доставки.";
+      okEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    const customer = {
+      name: raw.name,
+      phone: raw.phone,
+      email: raw.email,
+      city: raw.city,
+      comment: raw.comment,
+      paymentMethod,
+      deliveryMethod,
+    };
     const payload = {
-      customer: Object.fromEntries(fd.entries()),
+      customer,
       lines: cart.map((l) => {
         const p = window.CartCore.findProduct(l.id);
         return {

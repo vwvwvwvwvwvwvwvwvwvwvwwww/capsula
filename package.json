@@ -11,7 +11,8 @@
     "import-lime": "node scripts/import-lime-catalog.mjs",
     "seed-clients": "node scripts/seed-clients.mjs",
     "enrich-sizes": "node scripts/enrich-product-sizes.mjs",
-    "test-mail": "node scripts/test-mail.mjs"
+    "test-mail": "node scripts/test-mail.mjs",
+    "setup-unisender": "node scripts/setup-unisender.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^11.8.1",

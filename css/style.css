@@ -1218,6 +1218,79 @@ a:hover {
   min-height: 0;
 }
 
+.payment-methods,
+.delivery-methods {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.payment-methods__legend,
+.delivery-methods__legend {
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.payment-methods__option,
+.delivery-methods__option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.payment-methods__option + .payment-methods__option,
+.delivery-methods__option + .delivery-methods__option {
+  margin-top: 8px;
+}
+
+.payment-methods__option:has(input:checked),
+.delivery-methods__option:has(input:checked) {
+  border-color: var(--ink, #111);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.payment-methods__option input,
+.delivery-methods__option input {
+  margin-top: 3px;
+  width: auto;
+  min-height: 0;
+  flex-shrink: 0;
+}
+
+.payment-methods__text,
+.delivery-methods__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.payment-methods__text strong,
+.delivery-methods__text strong {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.payment-methods__text small,
+.delivery-methods__text small {
+  font-size: 0.78rem;
+  color: var(--muted, #666);
+  line-height: 1.35;
+}
+
+.order-detail__delivery,
+.order-detail__payment {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+}
+
 .form__err {
   color: #b00020;
   font-size: 0.88rem;

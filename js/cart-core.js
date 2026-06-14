@@ -28,14 +28,13 @@
     return size != null && String(size).trim() ? String(size).trim() : "";
   }
 
-  function defaultSizeForProduct(p) {
-    if (!p) return "";
-    if (Array.isArray(p.sizes) && p.sizes.length) return String(p.sizes[0]);
+  function productSizes(p) {
+    if (!p) return [];
+    if (Array.isArray(p.sizes) && p.sizes.length) return p.sizes.map(String);
     if (window.SizeCharts && typeof window.SizeCharts.productSizes === "function") {
-      const list = window.SizeCharts.productSizes(p);
-      return list[0] ? String(list[0]) : "";
+      return window.SizeCharts.productSizes(p).map(String);
     }
-    return "";
+    return [];
   }
 
   function sameLine(a, b) {
@@ -53,16 +52,19 @@
   function add(id, size) {
     const p = findProduct(id);
     if (!p) return load();
-    const sz = normalizeSize(size) || defaultSizeForProduct(p);
+    const sizes = productSizes(p);
+    const sz = normalizeSize(size);
+    if (sizes.length && !sz) return load();
     const cart = load();
-    const existing = cart.find((l) => sameLine(l, { id, size: sz }));
+    const lineSize = sz || (sizes.length ? "" : normalizeSize(size));
+    const existing = cart.find((l) => sameLine(l, { id, size: lineSize }));
     if (existing) existing.qty += 1;
     else {
       cart.push({
         id,
-        size: sz,
+        size: lineSize,
         qty: 1,
-        snapshot: { title: p.title, price: p.price, image: p.image, size: sz },
+        snapshot: { title: p.title, price: p.price, image: p.image, size: lineSize },
       });
     }
     save(cart);
@@ -105,5 +107,5 @@
     }, 0);
   }
 
-  window.CartCore = { load, save, add, setQty, remove, clear, totalQty, sum, findProduct, normalizeSize };
+  window.CartCore = { load, save, add, setQty, remove, clear, totalQty, sum, findProduct, normalizeSize, productSizes };
 })();
