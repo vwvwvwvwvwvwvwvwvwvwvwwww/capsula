@@ -108,17 +108,18 @@ https://ваш-домен.up.railway.app/api/ping
 
 ## 6. Первый вход
 
-Если база новая, админ создаётся автоматически из переменных:
+Задайте в Railway Variables:
 
-- `ADMIN_EMAIL`
-- `ADMIN_PASSWORD`
+```env
+ADMIN_EMAIL=ceoof@inbox.ru
+ADMIN_PASSWORD=ваш_надёжный_пароль
+```
 
-Если их не задать, будет дефолт:
+После **Redeploy** админ создаётся или обновляется автоматически.
 
-- `admin@kapsula.local`
-- `admin123`
+Вход: `/account.html` → затем `/admin.html`.
 
-Для публичной ссылки лучше задать свой пароль в Railway Variables.
+Если `ADMIN_EMAIL` / `ADMIN_PASSWORD` не заданы, будет дефолт `admin@kapsula.local` / `admin123` (только при пустой базе).
 
 ## 7. Ошибка сборки `better-sqlite3` / `node-gyp`
 
