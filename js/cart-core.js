@@ -51,24 +51,22 @@
 
   function add(id, size) {
     const p = findProduct(id);
-    if (!p) return load();
-    const sizes = productSizes(p);
-    const sz = normalizeSize(size);
-    if (sizes.length && !sz) return load();
     const cart = load();
-    const lineSize = sz || (sizes.length ? "" : normalizeSize(size));
-    const existing = cart.find((l) => sameLine(l, { id, size: lineSize }));
+    if (!p) return { cart, added: false };
+    const sz = normalizeSize(size);
+    if (!sz) return { cart, added: false };
+    const existing = cart.find((l) => sameLine(l, { id, size: sz }));
     if (existing) existing.qty += 1;
     else {
       cart.push({
         id,
-        size: lineSize,
+        size: sz,
         qty: 1,
-        snapshot: { title: p.title, price: p.price, image: p.image, size: lineSize },
+        snapshot: { title: p.title, price: p.price, image: p.image, size: sz },
       });
     }
     save(cart);
-    return cart;
+    return { cart, added: true };
   }
 
   function setQty(id, qty, size) {

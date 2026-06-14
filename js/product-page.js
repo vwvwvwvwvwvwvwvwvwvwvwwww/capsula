@@ -71,7 +71,7 @@
         cartSize.textContent = active || "—";
       }
       const table = rootEl.querySelector("#size-chart-table");
-      if (table && SC) table.innerHTML = SC.renderChartTableHtml(chart, active || sizes[0]);
+      if (table && SC) table.innerHTML = SC.renderChartTableHtml(chart, active);
       const err = rootEl.querySelector("#size-err");
       if (err) err.hidden = true;
     }
@@ -82,7 +82,7 @@
         <details class="size-chart">
           <summary class="size-chart__toggle">Таблица размеров · ${esc(chart.title)}</summary>
           <div class="size-chart__body" id="size-chart-table">
-            ${SC.renderChartTableHtml(chart, selectedSize || sizes[0])}
+            ${SC.renderChartTableHtml(chart, selectedSize)}
           </div>
         </details>`;
     }
@@ -173,14 +173,14 @@
 
       const addBtn = document.getElementById("btn-add-cart");
       addBtn.addEventListener("click", () => {
-        if (!selectedSize) {
+        if (!selectedSize || addBtn.disabled) {
           const err = root.querySelector("#size-err");
           if (err) err.hidden = false;
           return;
         }
         const before = window.CartCore.totalQty();
-        window.CartCore.add(p.id, selectedSize);
-        if (window.CartCore.totalQty() === before) return;
+        const result = window.CartCore.add(p.id, selectedSize);
+        if (!result.added || window.CartCore.totalQty() === before) return;
         if (window.updateCartBadge) window.updateCartBadge();
         addBtn.classList.add("is-added");
         const prev = addBtn.dataset.label || addBtn.textContent;
