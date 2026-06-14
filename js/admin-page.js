@@ -431,6 +431,18 @@
             alert(data.error || "Не удалось обновить статус");
             return;
           }
+          if (data.mail?.ok) {
+            const hint = document.createElement("p");
+            hint.className = "admin-inline-ok";
+            hint.textContent = `Статус обновлён. Клиенту отправлено письмо: ${data.mail.to}`;
+            preErr.hidden = true;
+            preErr.insertAdjacentElement("afterend", hint);
+            window.setTimeout(() => hint.remove(), 5000);
+          } else if (data.mail?.error) {
+            alert(`Статус сохранён, но письмо не ушло: ${data.mail.error}`);
+          } else if (data.mail?.skipped && data.mail?.error) {
+            alert(`Статус сохранён. Письмо не отправлено: ${data.mail.error}`);
+          }
         });
       });
       preBody.querySelectorAll(".js-po").forEach((btn) => {

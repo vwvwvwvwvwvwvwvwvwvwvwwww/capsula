@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import { createStore } from "./lib/store.mjs";
 import { readProducts, writeProducts, validateProducts, getProductsPath, ensureProductsFile } from "./lib/products-persist.mjs";
 import { loadEnv } from "./lib/load-env.mjs";
-import { sendPreorderEmails, isMailConfigured, verifySmtpConnection, getMailStatus } from "./lib/mail.mjs";
+import { sendPreorderEmails, sendOrderStatusEmail, isMailConfigured, verifySmtpConnection, getMailStatus } from "./lib/mail.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname);
@@ -242,9 +242,28 @@ async function handleApi(req, res) {
       if (user.role !== "admin") return sendJson(res, 403, { error: "Нужны права администратора" });
       const body = await readJsonBody(req);
       if (body === null || typeof body !== "object") return sendJson(res, 400, { error: "Некорректный JSON" });
+      const before = store.getPreorderNotifyInfo(body.id);
+      if (!before) return sendJson(res, 404, { error: "Заказ не найден" });
       const r = store.updatePreorderStatus(body.id, body.status);
       if (!r.ok) return sendJson(res, 400, { error: r.error });
-      return sendJson(res, 200, r);
+
+      let mail = null;
+      if (before.status !== r.status) {
+        try {
+          mail = await sendOrderStatusEmail({
+            orderId: before.id,
+            status: r.status,
+            statusLabel: r.statusLabel,
+            payload: before.payload,
+            accountEmail: before.userEmail || before.customerEmail,
+          });
+        } catch (mailErr) {
+          console.error("[КАПСУЛА] Ошибка письма о статусе:", mailErr);
+          mail = { ok: false, error: mailErr.message || "Ошибка почты" };
+        }
+      }
+
+      return sendJson(res, 200, { ...r, mail });
     }
 
     if (method === "GET" && p === "/api/admin/preorder") {
