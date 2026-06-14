@@ -305,7 +305,8 @@
         .join(", ");
       mailStatusEl.innerHTML =
         "<strong>Почта не настроена.</strong> Письма не отправляются — заявки только в базе.<br>" +
-        "<strong>Railway Hobby блокирует SMTP.</strong> Используйте <code>BREVO_API_KEY</code> (HTTPS) — бесплатно на brevo.com.<br>" +
+        "<strong>Railway Hobby блокирует SMTP.</strong> Для России: <code>UNISENDER_GO_API_KEY</code> (go.unisender.ru).<br>" +
+        "Или <code>UNISENDER_API_KEY</code> + <code>UNISENDER_LIST_ID</code> (unisender.com, бесплатно).<br>" +
         "Или тариф Railway Pro для SMTP Mail.ru.<br>" +
         (providers ? `SMTP-провайдеры (только Pro): ${esc(providers)}.` : "");
       if (mailTestBtn) mailTestBtn.hidden = true;
