@@ -10,12 +10,15 @@ import { fileURLToPath } from "node:url";
 import { createStore } from "./lib/store.mjs";
 import { readProducts, writeProducts, validateProducts, getProductsPath, ensureProductsFile } from "./lib/products-persist.mjs";
 import { loadEnv } from "./lib/load-env.mjs";
-import { sendPreorderEmails, isMailConfigured, verifySmtpConnection } from "./lib/mail.mjs";
+import { sendPreorderEmails, isMailConfigured, verifySmtpConnection, getMailStatus } from "./lib/mail.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname);
 process.env.APP_ROOT = ROOT;
 loadEnv(ROOT);
+if (!process.env.MAIL_OUTBOX_DIR && String(process.env.DB_PATH || "").startsWith("/data")) {
+  process.env.MAIL_OUTBOX_DIR = "/data/mail-outbox";
+}
 const PORT = Number(process.env.PORT, 10) || 3333;
 const DB_PATH = process.env.DB_PATH || path.join(ROOT, "data", "app.db");
 
@@ -195,6 +198,35 @@ async function handleApi(req, res) {
       if (!user) return sendJson(res, 401, { error: "Требуется вход" });
       if (user.role !== "admin") return sendJson(res, 403, { error: "Нужны права администратора" });
       return sendJson(res, 200, { users: store.listUsersAdmin() });
+    }
+
+    if (method === "GET" && p === "/api/admin/mail-status") {
+      const user = requireUser(req);
+      if (!user) return sendJson(res, 401, { error: "Требуется вход" });
+      if (user.role !== "admin") return sendJson(res, 403, { error: "Нужны права администратора" });
+      const status = await getMailStatus();
+      return sendJson(res, 200, status);
+    }
+
+    if (method === "POST" && p === "/api/admin/test-mail") {
+      const user = requireUser(req);
+      if (!user) return sendJson(res, 401, { error: "Требуется вход" });
+      if (user.role !== "admin") return sendJson(res, 403, { error: "Нужны права администратора" });
+      const status = await getMailStatus();
+      if (!status.configured) {
+        return sendJson(res, 400, { ok: false, error: status.error || "SMTP не настроен" });
+      }
+      const to = status.mailTo || user.email;
+      const mail = await sendPreorderEmails({
+        orderId: 0,
+        payload: {
+          customer: { name: "Тест админки", phone: "+79990000000", email: to },
+          lines: [{ title: "Тестовый товар", size: "M", qty: 1, unitPrice: 1000 }],
+          total: 1000,
+        },
+        accountEmail: user.email,
+      });
+      return sendJson(res, mail.ok ? 200 : 502, mail);
     }
 
     if (method === "GET" && p === "/api/admin/preorders") {

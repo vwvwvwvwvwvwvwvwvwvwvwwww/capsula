@@ -12,6 +12,10 @@
   const productsOk = document.getElementById("admin-products-ok");
   const btnSaveProducts = document.getElementById("admin-products-save");
   const btnAddProduct = document.getElementById("admin-products-add");
+  const mailStatusEl = document.getElementById("admin-mail-status");
+  const mailTestBtn = document.getElementById("admin-mail-test");
+  const mailErr = document.getElementById("admin-mail-err");
+  const mailOk = document.getElementById("admin-mail-ok");
 
   let catalogDraft = [];
 
@@ -288,6 +292,36 @@
     }
   }
 
+  async function loadMailStatus() {
+    if (!mailStatusEl) return;
+    const { res, data } = await apiJson("/api/admin/mail-status");
+    if (!res.ok) {
+      mailStatusEl.textContent = data.error || "Не удалось проверить почту";
+      return;
+    }
+    if (!data.configured) {
+      mailStatusEl.innerHTML =
+        "<strong>SMTP не настроен.</strong> Письма не отправляются — заявки только в базе. " +
+        "В Railway → Variables добавьте: SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS, MAIL_TO.";
+      if (mailTestBtn) mailTestBtn.hidden = true;
+      return;
+    }
+    const lines = [
+      `SMTP: ${esc(data.host)}:${data.port}, от ${esc(data.user)}`,
+      `Получатель заявок (MAIL_TO): ${esc(data.mailTo || "—")}`,
+      data.verified
+        ? "<strong style=\"color:var(--ok,#0a7)\">Подключение успешно — письма должны уходить.</strong>"
+        : `<strong style="color:var(--err,#c00)">Ошибка SMTP:</strong> ${esc(data.error || "неизвестно")}`,
+    ];
+    if (!data.verified && /yandex/i.test(data.host || "")) {
+      lines.push(
+        "Яндекс: id.yandex.ru → Пароли приложений → «Почта»; в SMTP_PASS — только этот пароль (16 символов), не обычный пароль от почты."
+      );
+    }
+    mailStatusEl.innerHTML = lines.map((l) => `<span style="display:block;margin:0 0 6px">${l}</span>`).join("");
+    if (mailTestBtn) mailTestBtn.hidden = !data.verified;
+  }
+
   async function init() {
     const me = await apiJson("/api/me");
     const user = me.data.user;
@@ -297,6 +331,30 @@
     }
     gate.hidden = true;
     content.hidden = false;
+
+    await loadMailStatus();
+    if (mailTestBtn && !mailTestBtn.dataset.bound) {
+      mailTestBtn.dataset.bound = "1";
+      mailTestBtn.addEventListener("click", async () => {
+        if (mailErr) mailErr.hidden = true;
+        if (mailOk) mailOk.hidden = true;
+        mailTestBtn.disabled = true;
+        const { res, data } = await apiJson("/api/admin/test-mail", { method: "POST", body: {} });
+        mailTestBtn.disabled = false;
+        if (!res.ok || !data.ok) {
+          if (mailErr) {
+            mailErr.textContent = data.error || "Не удалось отправить тестовое письмо";
+            mailErr.hidden = false;
+          }
+          return;
+        }
+        if (mailOk) {
+          mailOk.textContent = "Тестовое письмо отправлено. Проверьте входящие и папку «Спам».";
+          mailOk.hidden = false;
+        }
+        await loadMailStatus();
+      });
+    }
 
     const ur = await apiJson("/api/admin/users");
     if (!ur.res.ok) {

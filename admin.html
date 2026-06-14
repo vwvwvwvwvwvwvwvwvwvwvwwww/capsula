@@ -42,6 +42,13 @@
         </div>
       </div>
       <div class="admin-card">
+        <h2 class="section__title" style="font-size: 1rem">Почта (уведомления)</h2>
+        <p class="section__sub" id="admin-mail-status">Проверка…</p>
+        <button type="button" class="btn btn--ghost btn--sm" id="admin-mail-test" hidden>Отправить тестовое письмо</button>
+        <p class="form__err" id="admin-mail-err" hidden></p>
+        <p class="admin-inline-ok" id="admin-mail-ok" hidden></p>
+      </div>
+      <div class="admin-card">
         <h2 class="section__title" style="font-size: 1rem">Пользователи</h2>
         <table class="admin-table" id="admin-users-table">
           <thead><tr><th>ID</th><th>E-mail</th><th>Имя</th><th>Роль</th></tr></thead>

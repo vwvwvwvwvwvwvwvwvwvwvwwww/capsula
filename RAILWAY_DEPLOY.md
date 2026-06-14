@@ -49,7 +49,26 @@ DB_PATH=/data/app.db
 PRODUCTS_PATH=/data/products.json
 ```
 
-Для уведомлений о предзаказах через Gmail или другой SMTP (не Яндекс):
+Для уведомлений о предзаказах на **Яндекс.Почту** (рекомендуется):
+
+```env
+SMTP_HOST=smtp.yandex.ru
+SMTP_PORT=465
+SMTP_SECURE=1
+SMTP_USER=you@yandex.ru
+SMTP_PASS=пароль_приложения_16_символов
+MAIL_FROM=Капсула <you@yandex.ru>
+MAIL_TO=you@yandex.ru
+MAIL_OUTBOX_DIR=/data/mail-outbox
+```
+
+**Как получить SMTP_PASS для Яндекса:**
+1. [id.yandex.ru](https://id.yandex.ru) → **Безопасность** → **Пароли приложений** → создайте пароль для **«Почта»**.
+2. В **Яндекс.Почте** → **Настройки** → **Почтовые программы** → включите доступ по SMTP.
+3. В Railway → **Variables** вставьте переменные выше. `SMTP_PASS` — **только** пароль приложения, не обычный пароль от аккаунта.
+4. **Redeploy** сервиса. В админке (`/admin.html`) появится блок **«Почта»** — нажмите **«Отправить тестовое письмо»**.
+
+Для Gmail или другого SMTP:
 
 ```env
 SMTP_HOST=smtp.gmail.com
