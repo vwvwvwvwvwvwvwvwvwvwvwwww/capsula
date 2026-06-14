@@ -4,27 +4,26 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadEnv } from "../lib/load-env.mjs";
+import { describeMailSetup } from "../lib/smtp-providers.mjs";
 import { isMailConfigured, verifySmtpConnection, sendPreorderEmails } from "../lib/mail.mjs";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 process.env.APP_ROOT = ROOT;
 loadEnv(ROOT);
 
+const setup = describeMailSetup();
+
 console.log("[КАПСУЛА] Проверка почты…");
-console.log("SMTP_HOST:", process.env.SMTP_HOST || "(не задан)");
 console.log("SMTP_USER:", process.env.SMTP_USER || "(не задан)");
+console.log("SMTP_HOST:", setup.host || process.env.SMTP_HOST || "(авто по домену)");
+console.log("Провайдер:", setup.providerLabel || "(не определён)");
 console.log("MAIL_TO:", process.env.MAIL_TO || process.env.SMTP_USER || "(не задан)");
 console.log("configured:", isMailConfigured());
 
 const verify = await verifySmtpConnection();
 if (!verify.ok) {
   console.error("\n✗ SMTP:", verify.skipped ? verify.error : verify.error);
-  if (/yandex/i.test(process.env.SMTP_HOST || "")) {
-    console.error("\nЯндекс:");
-    console.error("1. id.yandex.ru → Безопасность → Пароли приложений → создайте «Почта»");
-    console.error("2. Вставьте его в SMTP_PASS в .env (или Variables на Railway)");
-    console.error("3. В Яндекс.Почте: Настройки → Почтовые программы → разрешить SMTP");
-  }
+  if (setup.authHint) console.error("\nПодсказка:", setup.authHint);
   process.exit(verify.skipped ? 0 : 1);
 }
 

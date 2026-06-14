@@ -300,23 +300,29 @@
       return;
     }
     if (!data.configured) {
+      const providers = (data.supportedProviders || [])
+        .map((p) => p.label)
+        .join(", ");
       mailStatusEl.innerHTML =
-        "<strong>SMTP не настроен.</strong> Письма не отправляются — заявки только в базе. " +
-        "В Railway → Variables добавьте: SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS, MAIL_TO.";
+        "<strong>SMTP не настроен.</strong> Письма не отправляются — заявки только в базе.<br>" +
+        "Минимум в Railway Variables: <code>SMTP_USER</code>, <code>SMTP_PASS</code>, <code>MAIL_TO</code>. " +
+        "Хост подставится сам (Яндекс, Mail.ru, Gmail…).<br>" +
+        (providers ? `Поддерживаются: ${esc(providers)}.` : "");
       if (mailTestBtn) mailTestBtn.hidden = true;
       return;
     }
     const lines = [
+      data.providerLabel
+        ? `Провайдер: <strong>${esc(data.providerLabel)}</strong>${data.autoDetected ? " (хост определён по e-mail)" : ""}`
+        : null,
       `SMTP: ${esc(data.host)}:${data.port}, от ${esc(data.user)}`,
       `Получатель заявок (MAIL_TO): ${esc(data.mailTo || "—")}`,
       data.verified
         ? "<strong style=\"color:var(--ok,#0a7)\">Подключение успешно — письма должны уходить.</strong>"
         : `<strong style="color:var(--err,#c00)">Ошибка SMTP:</strong> ${esc(data.error || "неизвестно")}`,
-    ];
-    if (!data.verified && /yandex/i.test(data.host || "")) {
-      lines.push(
-        "Яндекс: id.yandex.ru → Пароли приложений → «Почта»; в SMTP_PASS — только этот пароль (16 символов), не обычный пароль от почты."
-      );
+    ].filter(Boolean);
+    if (!data.verified && data.authHint) {
+      lines.push(esc(data.authHint));
     }
     mailStatusEl.innerHTML = lines.map((l) => `<span style="display:block;margin:0 0 6px">${l}</span>`).join("");
     if (mailTestBtn) mailTestBtn.hidden = !data.verified;

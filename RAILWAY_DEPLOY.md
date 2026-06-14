@@ -49,38 +49,37 @@ DB_PATH=/data/app.db
 PRODUCTS_PATH=/data/products.json
 ```
 
-Для уведомлений о предзаказах на **Яндекс.Почту** (рекомендуется):
+### Почта (любой сервис)
+
+**Минимум** — хост подставится сам по домену `SMTP_USER`:
 
 ```env
-SMTP_HOST=smtp.yandex.ru
-SMTP_PORT=465
-SMTP_SECURE=1
-SMTP_USER=you@yandex.ru
-SMTP_PASS=пароль_приложения_16_символов
-MAIL_FROM=Капсула <you@yandex.ru>
-MAIL_TO=you@yandex.ru
+SMTP_USER=you@mail.ru
+SMTP_PASS=пароль_приложения
+MAIL_TO=you@mail.ru
+MAIL_FROM=Капсула <you@mail.ru>
 MAIL_OUTBOX_DIR=/data/mail-outbox
 ```
 
-**Как получить SMTP_PASS для Яндекса:**
-1. [id.yandex.ru](https://id.yandex.ru) → **Безопасность** → **Пароли приложений** → создайте пароль для **«Почта»**.
-2. В **Яндекс.Почте** → **Настройки** → **Почтовые программы** → включите доступ по SMTP.
-3. В Railway → **Variables** вставьте переменные выше. `SMTP_PASS` — **только** пароль приложения, не обычный пароль от аккаунта.
-4. **Redeploy** сервиса. В админке (`/admin.html`) появится блок **«Почта»** — нажмите **«Отправить тестовое письмо»**.
+Поддерживаются автоматически: **Яндекс**, **Mail.ru** (mail.ru, bk.ru, inbox.ru, list.ru), **Gmail**, **Outlook/Hotmail**, **Yahoo**, **Rambler**, **iCloud**.
 
-Для Gmail или другого SMTP:
+Если автоопределение не сработало — задайте вручную:
 
 ```env
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-SMTP_SECURE=1
-SMTP_USER=your@gmail.com
-SMTP_PASS=app_password
-MAIL_FROM=Капсула <your@gmail.com>
-MAIL_TO=manager@example.com
+SMTP_PROVIDER=mailru
+# или SMTP_HOST=smtp.mail.ru
+# SMTP_PORT=465
+# SMTP_SECURE=1
 ```
 
-Для Gmail нужен **App Password**: включите двухфакторную защиту в аккаунте Google и создайте пароль приложения. Для другого почтового сервиса замените `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` на данные провайдера.
+| Сервис | SMTP_USER | Где взять SMTP_PASS |
+|--------|-----------|---------------------|
+| Яндекс | `you@yandex.ru` | id.yandex.ru → Пароли приложений → «Почта» |
+| Mail.ru | `you@mail.ru` | mail.ru → Настройки → Пароль для внешнего приложения |
+| Gmail | `you@gmail.com` | Google → 2FA → App Password |
+| Outlook | `you@outlook.com` | Пароль Microsoft или пароль приложения |
+
+После **Redeploy** → админка `/admin.html` → блок **«Почта»** → **«Отправить тестовое письмо»**.
 
 ### Порт и домен (Networking)
 
